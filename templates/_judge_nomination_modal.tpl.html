@@ -1,0 +1,159 @@
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" >&times;</span></button>
+            <h4 class="modal-title" translate>Awards nomination</h4>
+        </div>
+        <div class="modal-body">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fa fa-arrow-right"></i> {{nomination.name}}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <i class="fa fa-trophy"></i>&nbsp; <b>
+                            {% for rev in nomination.category.revisions_latest %}
+                                {% if rev.type_variable == 'NAME' %}
+                                    {{ rev.revision_body }}
+                                {% endif %}
+                            {% endfor %}
+                        </b>
+                        </div>
+                        <div class="col-sm-12">
+                            {% for rev in nomination.category.revisions_latest %}
+                                {% if rev.type_variable == 'DESCRIPTION' %}
+                                    {{ rev.revision_body | safe}}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="container">
+                        {% if receiving_comments %}
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <b>Receiving comments</b>
+                                </div>
+                                <div class="col-sm-9">
+                                    {% for comment in receiving_comments %}
+                                        {{ comment.value }}<br>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if processing_comments %}
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <b>Processing comments</b>
+                                </div>
+                                <div class="col-sm-9">
+                                    {% for comment in processing_comments %}
+                                        {{ comment.value }}<br>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            {% if not hidden %}
+                <form method="POST" action="{{ action }}">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Questions / Answers</th>
+                            <th width="50" class="text-center"> Max </th>
+                            <th width="200"> Score</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for question in nomination.questions %}
+                            {% set max_score = question.content_preview[language]['SCORE'].value %}
+                            {% if question.content_preview[language]['HIDE_FROM_JUDGE'].value != 'True' and question.content_preview[language]['IS_NOMINATION'].value != 'True' %}
+                                <tr>
+                                    <td>
+                                        <b>{{question.content_preview[language]['LABEL'].value}}</b>
+                                        <br>
+                                        {% set answer_type = question.content_preview[language]['ANSWER'].value %}
+                                        {% set value = question.response.response_value%}
+                                        {% if value %}
+                                            {% if answer_type == 'VideoLink' %}
+                                                {% with videoUrl = value|parse_video_url %}
+                                                    {% if videoUrl %}
+                                                        <iframe src="{{ videoUrl }}" width="450px" height="250px"></iframe>
+                                                    {% else %}
+                                                        <pre class="answer" style="color: red">Sorry, video by url "{{ value }}" not found, Please contact the Event Administrator for help.</pre>
+                                                    {% endif %}
+                                                {% endwith %}
+                                            {% elif answer_type == 'FileUpload' %}
+                                                <a href="{{ value }}" target="_blank"><pre class="answer">{{ value.split('/') | last}}</pre></a>
+                                            {% else %}
+                                                <pre class="answer">{{value}}</pre>
+                                            {% endif %}
+                                        {% else %}
+                                            <pre class="answer">-</pre>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if max_score != '0' %}<strong>{{ max_score }}</strong>{% endif %}
+                                    </td>
+                                    <td>
+                                        {% if max_score != '0' %}
+                                            {% if not readonly %}
+                                                {% if judgement is none %}
+                                                    <input type="text" name="{{ question.response.id }}" max="{{ max_score }}" min="0" placeholder="max: {{ max_score }}" class="form-control score-input"/>
+                                                {% else %}
+                                                    {% for score in judgement.scores %}
+                                                        {% if score.response_id == question.response.id %}
+                                                            <input type="text" name="{{ question.response.id }}" max="{{ max_score }}" min="0" value="{{ score.score }}" placeholder="max: {{ max_score }}" class="form-control score-input"/>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% else %}
+                                                {% if judgement is none %}
+                                                    0
+                                                {% else %}
+                                                    {% for score in judgement.scores %}
+                                                        {% if score.response_id == question.response.id %}
+                                                            {{ score.score }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        <tr>
+                            <td colspan="2">
+                                <b>Feedback:</b>
+                                {% if not readonly %}
+                                    <textarea rows="6" name="feedback" class="form-control feedback">{{ judgement.feedback }}</textarea>
+                                {% else %}
+                                    "{{ judgement.feedback }}"
+                                {% endif %}
+                            </td>
+                            <td align="center" style="height: 1px;">
+                                <div class="judge-result">
+                                    <div class="judging-days">{{ total_score }}</div>
+                                    <div class="save-button" align="center">
+                                        {% if not readonly %}
+                                            <button url="{{ url_for_judging }}" class="btn btn-sm btn-primary pull-center save-judging"
+                                                    nomination_uuid="{{nomination.group_uuid}}" user_id="{{session['user']['user_id']}}">Save</button>
+                                        {% else %}
+                                            <button class="btn btn-sm btn-default pull-center" data-dismiss="modal">Cancel</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,98 @@
+{% extends 'layouts/base.html' %}
+{% block conteiner_raw %}
+
+<div class="container-fluid private">
+    <div class="row">
+    {% if session.user %}
+        <nav class="navbar navbar-default visible-xs hidden-sm hidden-md hidden-lg">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li class="{{ profile }}">
+                            <a class="btn btn-default" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/private/profile'}}">Profile</a>
+                        </li>
+                        <li class="{{ transaction }}">
+                            <a class="btn btn-default" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/private/transactions'}}">Transactions</a>
+                        </li>
+                        <!--<li class="active">-->
+                            <!--<a class="btn btn-default" href="#">My nominations</a>-->
+                        <!--</li>-->
+                        {% if 'nominationreceiving' in roles and accessibility['Nominations']['status'] == 'opened'  and 'eventmember' in roles %}
+                            <li class="{{receiving}}">
+                                <a class="btn btn-default" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/private/nomination/receive' }}">Nomination Receiving</a>
+                            </li>
+                        {% endif %}
+                        {% if 'nominationprocessing' in roles and accessibility['Nominations']['status'] == 'opened'  and 'eventmember' in roles %}
+                            <li class="{{processing}}">
+                                <a class="btn btn-default {{processing}}" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/private/nomination/process'}}">Nomination Processing</a>
+                            </li>
+                        {% endif %}
+                        <!--<a class="btn btn-default" href="#">Table booking</a>-->
+                        {% if 'judge' in roles and accessibility['Judging']['status'] == 'opened' and 'eventmember' in roles%}
+                            <li class="{{judging}}">
+                                <a class="btn btn-default {{judging}}" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/private/judging' }}">Judging</a>
+                            </li>
+                        {% endif %}
+                        <br>
+                        <div class="simple-anchor text-center"><a></a></div>
+                        <div class="simple-anchor text-center"><a href="{{ url_for('index.privacy_policy', event_shortname=session['event_shortname'], lang=session['lang']) }}">Privacy Policy</a></div>
+                        <div class="simple-anchor text-center"><a href="{{ url_for('index.terms_and_conditions', event_shortname=session['event_shortname'], lang=session['lang']) }}">Terms & Conditions</a></div>
+                    </ul>
+                </div>
+          </div>
+        </nav>
+        <div class="col-md-12 top-nav">
+            <a class="btn btn-default pull-left" href="{{ request['host_url']+session['event_shortname'] + '/' + session['lang']}}">View Event Site</a>
+            <span class="pull-right">
+                <a class="btn btn-default" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/logout'}}">Logout</a>
+                {% if basket_items_count is defined %}
+                <a class="btn btn-primary" href="{{ request['host_url']+ session['event_shortname'] + '/' + session['lang'] + '/basket'}}">
+                    <i class="glyphicon glyphicon-shopping-cart"></i> {{ basket_items_count }} item{% if basket_items_count > 1 or basket_items_count == 0 %}s{% endif %}{% if basket_items_count > 0 %} - {{ session['event'].currency.symbol }}{{ basket_price }}{% endif %}
+                </a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    <hr/>
+    <div class="row private-space">
+        <div class="personal-space-menu hidden-xs">
+            <span>
+                <a class="btn btn-default {{ profile }}" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/private/profile'}}">Profile</a>
+                <a class="btn btn-default {{ transaction }}" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/private/transactions'}}">Transactions</a>
+                <!--<a class="btn btn-default" href="#">My nominations</a>-->
+                {% if 'nominationreceiving' in roles and accessibility['Nominations']['status'] == 'opened' and 'eventmember' in roles %}
+                    <a class="btn btn-default {{receiving}}" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/private/nomination/receive' }}">Nomination Receiving</a>
+                {% endif %}
+                {% if 'nominationprocessing' in roles and accessibility['Nominations']['status'] == 'opened' and 'eventmember' in roles %}
+                    <a class="btn btn-default {{processing}}" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/private/nomination/process'}}">Nomination Processing</a>
+                {% endif %}
+                <!--<a class="btn btn-default" href="#">Table booking</a>-->
+                {% if 'judge' in roles and 'eventmember' in roles %}
+                    <a class="btn btn-default {{judging}}" href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang'] + '/private/judging' }}">Judging</a>
+                {% endif %}
+                <div class="clearfix"></div>
+                <br><br>
+                <div class="simple-anchor"><a href="{{ url_for('index.privacy_policy', event_shortname=session['event_shortname'], lang=session['lang']) }}">Privacy Policy</a></div>
+                <div class="simple-anchor"><a href="{{ url_for('index.terms_and_conditions', event_shortname=session['event_shortname'], lang=session['lang']) }}">Terms & Conditions</a></div>
+            </span>
+        </div>
+    {% endif %}
+        <div class="personal-space-content col-xs-12">
+            {% block members_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block additional_scripts %}
+<script type="text/javascript" src="/static/default/js/preparations.js"></script>
+<script type="text/javascript" src="/static/default/js/transactions.js"></script>
+{% endblock %}

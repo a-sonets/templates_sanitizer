@@ -1,0 +1,131 @@
+<div class="private">
+    <form id='submit-form' method="post" enctype="multipart/form-data" style="display: none" action="{{ url_for('basket.create_awards', event_shortname=session['event_shortname'], lang=session['lang']) }}{% if transaction %}?transaction_id={{ transaction.uuid }}{% endif %}"></form>
+    <div id="basket-root">
+        <div>
+            <div class="col-sm-11">
+                <div>
+                    <span style="font-size: 20px">
+                        {{ 'Transaction: ' + transaction.transaction_code if transaction else 'Basket' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="col-sm-12" id="{{ 'basket-view' if transaction else 'shopping-cart' }}">
+                {% if error_messages %}
+                    <div class="alert alert-danger">
+                        Please, pay your attention: <br /><br />
+                        {% for error in error_messages %}
+                            {{ error }}<br />
+                        {% endfor %}
+                        <br />
+                        Remove unavailable products and continue.
+                    </div>
+                {% endif %}
+                {% if awards_nominations %}
+                    {% with nominations = awards_nominations -%}
+
+                        <div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading ">
+                                    <span class="panel-title" data-toggle="collapse" href="#nomination-collapse "><i class="glyphicon glyphicon-chevron glyphicon-chevron-down"></i>&nbsp; NOMINATIONS</span>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div id="nomination-collapse" class="panel-collapse collapse in">
+                                    <div class="panel-body">
+                                        <table class="table" id="awards-nomination">
+                                            <thead>
+                                            <tr>
+                                                <th><small>ITEM</small></th>
+                                                <th class="text-center"><small>CLOSES</small></th>
+                                                <th class="text-center">
+                                                    {% if total_product_price > 0 %}
+                                                        <small>PRICE</small>
+                                                    {% endif %}
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {% for product in nominations -%}
+                                                {% with loop_index = loop.index %}
+                                                    {% include 'basket/_products.html' %}
+                                                {% endwith %}
+                                            {%- endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% if total_product_price > 0 %}
+                                    <div class="pull-right">
+                                        <strong>
+                                            <span>TOTAL:</span>  {{ currency_sign }}&nbsp; <span id="total-nominations-sum-value">{{ total_product_price }}</span>
+                                        </strong>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {%- endwith %}
+                {% endif %}
+
+
+
+                {% if booking_tables %}
+                    {% with tables = booking_tables -%}
+                        <br />
+                        <div>
+                            <div class="panel panel-default" >
+                                <div class="panel-heading">
+                                    <span class="panel-title" data-toggle="collapse" href="#booking-collapse" ><i class="glyphicon glyphicon-chevron glyphicon-chevron-down"></i>&nbsp; BOOKINGS</span>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div id="booking-collapse" class="panel-collapse collapse in">
+                                    <div class="panel-body">
+                                        <table class="table" id="tables">
+                                            <table-head>
+                                                <tr>
+                                                    <th><small>ITEM</small></th>
+                                                    <th class="text-center"><small>CLOSES</small></th>
+                                                    <th class="text-center">
+                                                        {% if total_booking_price > 0 %}
+                                                            <small>PRICE</small>
+                                                        {% endif %}
+                                                    </th>
+                                                    <th></th>
+                                                </tr>
+                                            </table-head>
+                                            <table-body>
+                                                {% for product in tables -%}
+                                                    {% with loop_index = loop.index %}
+                                                        {% include 'basket/_products.html' %}
+                                                    {% endwith %}
+                                                {%- endfor %}
+                                            </table-body>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="pull-right">
+                                    <strong>
+                                        <span>TOTAL:</span>  {{ currency_sign }}&nbsp; <span id="total-basket-sum-value">{{ total_booking_price }}</span>
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    {%- endwith %}
+                {% endif %}
+                <div>
+                    <br>
+                    <div class="pull-right">
+                        <br />
+                        <button disabled class="btn btn-sm btn-success pull-right btn-checkout-all-in-basket">
+                            <i class="fa icon-evessio-basket-out"></i> <span id="process-button-name">
+                            {% if total_product_price + total_booking_price  > 0 %}Checkout All items...{% else %}Process All items...{% endif %}
+                        </span>
+                        </button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

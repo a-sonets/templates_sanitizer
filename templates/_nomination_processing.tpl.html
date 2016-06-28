@@ -1,0 +1,69 @@
+{% extends "members/members.tpl.html" %}
+{% block members_content %}
+<div>
+    {% if form_message %}
+        <div class="message">{{ form_message }}</div>
+    {% endif %}
+    <table id="nominationTable" class="display table table-bordered table-striped " cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Nominee</th>
+                <th>Received by</th>
+                <th>Date received</th>
+                <th>Processed by</th>
+                <th>Date processed</th>
+                <th width="120">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for category in categories %}
+            {% for nomination in category.nominations %}
+                {% for preparation in nomination.preparations %}
+                    <tr>
+                        <td>{{ category.content_preview['EN']['NAME'].value }}</td>
+                        <td>{{ nomination.name }}</td>
+                        <td class="text-center">
+                            {% if preparation.received_user is not none %}
+                                {{ preparation.received_user.user_firstname }} {{ preparation.received_user.user_lastname }}
+                            {% else %}
+                                <i class="fa fa-minus"></i>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if preparation.received_date is not none %}
+                                {{ moment(preparation.received_date).format('L LT') }}
+                            {% else %}
+                                <i class="fa fa-minus"></i>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if preparation.processed_user %}
+                                {{ preparation.processed_user.user_firstname }} {{ preparation.processed_user.user_lastname }}
+                            {% else %}
+                                <i class="fa fa-minus"></i>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if preparation.processed_date %}
+                                {{ moment(preparation.processed_date).format('L LT') }}
+                            {% else %}
+                                <i class="fa fa-minus"></i>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if preparation.processed_user %}
+                                <a class="btn btn-sm btn-primary edit-process" href="{{ url_for('profile.process_single_nomination', event_shortname=session['event_shortname'], lang=session['lang'], preparation_id=preparation.id) }}">Edit comments</a>
+                            {% else %}
+                                <a class="btn btn-sm btn-success create-process" href="{{ url_for('profile.process_single_nomination', event_shortname=session['event_shortname'], lang=session['lang'], preparation_id=preparation.id) }}">Process Nomination</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="clearfix"></div>
+</div>
+{% endblock %}

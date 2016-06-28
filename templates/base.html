@@ -1,0 +1,31 @@
+{% assets "css_frontend" -%}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+{%- endassets %}
+
+{% block additional_css %}{% endblock %}
+
+{% block script %}
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    {% assets "js_legacy" -%}
+      <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+      <![endif]-->
+{% endblock %}
+
+{% block topnav %}
+    <!-- Static navbar -->
+{% endblock %}
+
+<div id="header">{% block header %}{% endblock %}</div>
+<div class="container-fluid">
+    {% block content %}{% endblock %}
+</div>
+    {% block conteiner_raw %}{% endblock %}
+<div class="clearfix" style="padding-bottom: 10px;"></div>
+
+{% assets "js_frontend" -%}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{%- endassets %}
+
+{% block additional_scripts %}{% endblock %}

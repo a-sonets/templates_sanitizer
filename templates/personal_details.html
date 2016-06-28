@@ -1,0 +1,16 @@
+{% extends 'checkout/wizard.tpl.html' %}
+{% block step_header %}Personal Details{% endblock %}
+{% block step_content %}
+    <div>
+        {{ personal_details_form | safe }}
+    </div>
+{% endblock %}
+{% block right_aside %}
+    {% if session['wizard'].amount > 0 %}
+        <div class="w-amount">
+            <div class="text-center"><i class="fa fa-money"></i></div>
+            <div class="text-center">Amount you have to pay</div>
+            <div class="text-center"><strong>{{ wizard.currency }}{{ '%0.2f'| format(wizard.amount) }}</strong></div>
+        </div>
+    {% endif %}
+{% endblock %}

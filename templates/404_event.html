@@ -1,0 +1,15 @@
+{% extends 'errors/base.html' %}
+{% block section_top %}
+
+    <div class="error-image">
+        <img src="/static/default/img/notfound-people.png" />
+    </div>
+    <div class="error-message-container">
+        <div class="error-main">Event not found</div>
+        <div class="error-detail">
+            make sure that: <br>
+            <span class="round-badge">1</span> The URL is correct
+            <span class="round-badge">2</span> The event is published
+        </div>
+    </div>
+{% endblock %}

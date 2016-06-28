@@ -1,0 +1,76 @@
+{% macro render_field_with_errors(field) %}
+    {% set css_class=kwargs.pop('class', '') %}
+    {% set label=kwargs.pop('label', '') %}
+    <div class="form-group">
+        {% if field.type == 'BooleanField' %}
+            <div class="checkbox">
+                <label>{{ field(class=css_class, **kwargs) }} {{ label | safe if label else field.label }}</label>
+            </div>
+        {% else %}
+            {{ field(class=css_class, placeholder=field.label.text, **kwargs)|safe }}
+        {% endif %}
+        {% if field.errors %}
+            <ul class="errors">
+                {% for error in field.errors %}
+                    <li>
+                        <span class="fa fa-exclamation-triangle"></span>
+                        <span class="glyphicon-class">{{ error }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+
+{% macro render_field(field) %}
+    <p>{{ field(**kwargs)|safe }}</p>
+{% endmacro %}
+
+{% macro render_field_withlabel(field) %}
+    {% set css_class=kwargs.pop('class', '') %}
+    {% if field.type == 'BooleanField' %}
+        <div class="checkbox">
+            <label>{{ field(class=css_class, **kwargs)|safe }} {{ field.label }}</label>
+        </div>
+    {% else %}
+        <label>{{ field.label }}</label>
+        <div class="form-group">
+            {{ field(class=css_class, **kwargs)|safe }}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro render_field_generic(field, label=True, error=True, btn=False) %}
+    {% set css_class=kwargs.pop('class', '') %}
+    {% set width_class='col-lg-4' if btn else 'col-lg-8' %}
+    <div class="form-group row">
+        {% if field.type == 'BooleanField' %}
+            <div class="checkbox">
+                <label>{{ field(class=css_class, **kwargs) }} {{ field.label }}</label>
+            </div>
+        {% else %}
+            {% if label %}
+                <label for="{{ field.id }}" class="col-sm-4 form-label">{{ field.label }}</label>
+                <div class={{ width_class }}>
+                    {{ field(class="form-control " + css_class, placeholder=field.label.text, **kwargs)|safe }}
+                </div>
+            {% else %}
+                <div class="{{width_class}} col-sm-offset-4">
+                    {{ field(class="form-control " + css_class, placeholder=field.label.text, **kwargs)|safe }}
+                </div>
+            {% endif %}
+        {% endif %}
+
+        {% if field.errors and error %}
+            <ul class="errors">
+                {% for error in field.errors %}
+                    <li>
+                        <span class="fa fa-exclamation-triangle"></span>
+                        <span class="glyphicon-class">{{ error }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endmacro %}

@@ -1,0 +1,66 @@
+<tr id="item-{{ product.node_uuid }}-{{ loop_index }}" catid="{{ product.node_uuid }}" class="{{ '' if product.state == 'Available' else 'not-available' }} product"
+        {% if product.form_group_uuid %} data-remove-url="{{ url_for('basket.remove_item_from_basket', event_shortname=session['event_shortname'], lang=session['lang'], form_group_uuid=product.form_group_uuid) }}"{% endif %}>
+    <td tabindex="0" class="accordion-toggle panel-title"
+        data-toggle="collapse"
+        id="toggle-{{ product.node_uuid }}-{{ loop_index }}"
+        data-target="#{{ product.node_uuid }}-{{ loop_index }}"
+        style="cursor: pointer;">
+        <div class="product-name">
+            <i class="glyphicon glyphicon-chevron glyphicon-chevron-down"></i>&nbsp;
+            <strong>{{ product.name }}</strong>
+        </div>
+    </td>
+    <td class="text-center">
+        <strong>
+            <div class="product-close-date">
+                {{ moment(product.close_date).format('LL') }}
+            </div>
+        </strong>
+    </td>
+    <td class="text-center acc-product" data-id="{{ product.node_uuid }}-{{ loop_index }}">
+        {% if product.type == 'Awards' and total_product_price > 0 or product.type == 'Booking' and total_booking_price > 0 %}
+            <strong>{{ currency_sign }}&nbsp;<span class="product-price">{{ product.price }}</span></strong>
+        {% endif %}
+    </td>
+    <td class="text-center">
+        <div class="pull-right">
+            <button class="btn btn-sm btn-default product-button">
+                <span id="progress-{{ product.node_uuid }}-{{ loop_index }}" class="product-progress">0</span> / {% if product.type == 'Awards' %}<span class="count-fields" id="count-fields-{{ product.node_uuid }}-{{ loop_index }}">0</span>{% else %}{{ product.progress }}{% endif %}
+            </button>
+            {% if not transaction %}
+                <button class="btn btn-sm btn-default product-button remove-product" target="item-{{ product.node_uuid }}-{{ loop_index }}">
+                    <i class="glyphicon glyphicon-trash"></i>
+                </button>
+            {% endif %}
+        </div>
+    </td>
+</tr>
+<tr class="product-warning">
+    <td colspan="3">
+        <span id="warning-{{ product.node_uuid }}-{{ loop_index }}"><i class="glyphicon glyphicon-exclamation-sign"></i>&nbsp; Please complete entry information</span>
+    </td>
+    <td class="text-center">
+        {% if not transaction %}
+            <div class="pull-right">
+                <button disabled id="checkout-{{ product.node_uuid }}-{{ loop_index }}" class="btn btn-sm btn-success form-product-submit">Checkout item...</button>
+            </div>
+        {% endif %}
+    </td>
+</tr>
+<tr style="height: 0; padding: 0;" class="panel-collapse collapse"
+    id="{{ product.node_uuid }}-{{ loop_index }}"
+    catid="{{ product.node_uuid }}"
+    data-type="products">
+    <td colspan="4" style="height: 0; padding: 0; border-top: none">
+        {% if product.description %}
+            <div class="product-description-outer">
+                <div class="product-description-inner">
+                    <div>{{ product.description | safe }}</div>
+                </div>
+            </div>
+            <br>
+        {% endif %}
+        {{ product.content_html|safe }}
+        <br>
+    </td>
+</tr>

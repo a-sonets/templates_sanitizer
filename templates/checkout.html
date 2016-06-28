@@ -1,0 +1,49 @@
+{% extends 'layouts/base.html' %}
+{% block additional_css %}
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/default/css/basket.css">
+{% endblock %}
+{% block additional_scripts %}
+    <script src="/static/default/js/basket.js"></script>
+    <script src="/static/default/js/moment.js"></script>
+{% endblock %}
+{% block conteiner_raw %}
+<div class="row private">
+        <div class="col-md-12">
+            <h3>Transaction Summary: </h3>
+            {{ transaction_table| safe }}
+        </div>
+        <br />
+
+        <div class="col-md-12">
+            <form id="paymentData">
+            <input type="hidden" name="transaction_id" value="{{ transaction_uuid }}"/>
+            {% if providers|length > 0 %}
+                <h3>How would you like to pay:</h3>
+                <div>
+                    {% for p in providers %}
+                        {% if loop.index == 1 %}
+                            <input type="radio" name="payment_type" value="{{ p.id }}" checked /> {{ p.name }}<br />
+                        {% else %}
+                            <input type="radio" name="payment_type" value="{{ p.id }}" /> {{ p.name }}<br />
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <h4>Sorry, there are no options to pay. Please contact the Event administrator for help.</h4>
+            {% endif %}
+            </form>
+
+            {{ forms|safe }}
+
+            <br />
+            {% if providers|length > 0 %}
+                <button class="btn btn-sm btn-success" id="paymentButton">Submit</button>
+            {% endif %}
+            <br />
+            <div class="clearfix"></div>
+            <div id="paymentForm"></div>
+        </div>
+</div>
+<div class="clearfix"></div>
+{% endblock %}

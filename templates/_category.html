@@ -1,0 +1,7 @@
+<form method="POST" enctype='application/json'>
+    {% for question in questions %}
+        {% with loop_index = loop.index %}
+            {{ question|safe }}
+        {% endwith %}
+    {% endfor %}
+</form>

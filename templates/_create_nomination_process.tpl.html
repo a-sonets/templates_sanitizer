@@ -1,0 +1,54 @@
+{% extends "members/members.tpl.html" %}
+{% block members_content %}
+<div>
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-4 text-right">
+                <b>Category</b><br>
+                <b>Nomination code</b><br>
+                <b>Data received</b><br>
+                <b>Nominee</b><br>
+                <b>Receiving comments</b><br>
+            </div>
+            <div class="col-xs-8 text-left">
+                {{ nomination.category.content_preview['EN']['NAME'].value }}<br>
+                {{ nomination.nomination_code }}<br>
+                {{ moment(preparation.received_date).format('L LT') }}<br>
+                {{ nomination.name }}<br>
+                <div class="row">
+                    <div class="col-md-12">
+                        {% for response in responses %}
+                            <div class="row">
+                                <div class="col-xs-12 text-left">
+                                    {{ response.value }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div><br>
+                </div>
+            </div>
+        </div>
+        <br>
+        <form method="post" action="">
+            <div class="row">
+                {% if errors %}
+                    <div class="col-md-12">
+                        <div class="alert alert-danger">
+                            {% for error in errors %}
+                                {{ error }}<br />
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="col-md-12">
+                    {{ form | safe  }}
+                </div>
+            </div>
+        </form>
+        <div class="pull-right">
+            <a class="btn btn-sm btn-default" href="{{ cancel_url }}">Cancel</a>
+            <button {% if readonly and preparation.group_uuid is not none %} disabled {% endif %} type="submit" class="btn btn-primary complete-preparation">Complete processing</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

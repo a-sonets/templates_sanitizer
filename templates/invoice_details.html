@@ -1,0 +1,110 @@
+{% extends 'checkout/wizard.tpl.html' %}
+{% block step_header %}Invoice Details{% endblock %}
+{% block step_content %}
+    <div id="accordion">
+        <h4>
+            <span>
+            <input type="radio" name="selected_form" value="{{ InvoiceDetailsForm.UsePersonal.value }}" {{ 'checked="checked"' if selected_form == InvoiceDetailsForm.UsePersonal.value else '' }}> I will use my personal details
+            </span>
+        </h4>
+        <div>
+            {{ personal_details_form | safe }}
+        </div>
+
+        <h4>
+            <input type="radio" name="selected_form" value="{{ InvoiceDetailsForm.UseNew.value }}" {{ 'checked="checked"' if selected_form == InvoiceDetailsForm.UseNew.value else '' }}> I will use new invoice details
+        </h4>
+        <div>
+            {{ invoice_details_form | safe }}
+        </div>
+
+        {% if addresses|length > 0 %}
+            <h4>
+                <input type="radio" name="selected_form" value="{{ InvoiceDetailsForm.UseExisting.value }}" {{ 'checked="checked"' if selected_form == InvoiceDetailsForm.UseExisting.value else '' }}> I will use previously saved invoice details
+            </h4>
+            <div>
+                <div class="col-md-12">
+                    <div class="address-form">
+                        {% if address_details_form %}
+                            <div class="w-address-link">
+                                <a href="javascript:(void)" id="selectAddressLink">&lt; Select another invoice details</a><br />
+                            </div>
+                            {{ address_details_form | safe }}
+                        {% endif %}
+                    </div>
+                    <div class="w-address-list {{ 'hide' if address_details_form }}">
+                        {% if address_details_form %}
+                            <div class="w-address-link">
+                                <a id="cancelLink" href="javascript:(void)">Return to selected &gt;</a>
+                            </div>
+                        {% endif %}
+                        {% for address in addresses %}
+                            <div class="col-md-6 col-xs-12">
+                                <div class="w-address">
+                                    <div class="w-info">
+                                        <div class="w-name">{{ address.lines[0] + ' ' + address.lines[1] }}</div>
+                                        {% for line in address.lines %}
+                                            {% if loop.index > 1 and line %}
+                                                <span>{{ line }}</span><br />
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="w-action text-center">
+                                        {% if address_id and address_id == address.uuid %}
+                                            <button class="btn btn-default" disabled>Currently selected</button>
+                                        {% else %}
+                                            <button class="btn btn-default" name="use_address" value="{{ address.uuid }}">Use this address</button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% if addresses|length < 1 %}
+                            <div class="text-center">No previous addresses found</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="w-terms">
+        <div class="w-terms-link">
+            <input type="checkbox" name="terms" /> &nbsp; I have read and accept <a target="_blank" href="{{ terms_link }}">Terms and Conditions</a>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(function() {
+            $("#accordion").accordion({
+                heightStyle: "content",
+                active: {{ selected_form }},
+                event: "mouseup",
+                beforeActivate: function(event, ui) { $(ui.newHeader).find('input').prop('checked', true); }
+            });
+        });
+
+        $("form").submit(function() {
+            $('.ui-accordion-content:not(".ui-accordion-content-active")').remove();
+        });
+
+        $("#selectAddressLink").click(function() {
+            $('.address-form').addClass('hide');
+            $('.w-address-list').removeClass('hide');
+        });
+
+        $('#cancelLink').click(function(){
+            $('.address-form').removeClass('hide');
+            $('.w-address-list').addClass('hide');
+        });
+    </script>
+{% endblock %}
+{% block right_aside %}
+    {% if session['wizard'].amount > 0 %}
+        <div class="w-amount">
+            <div class="text-center"><i class="fa fa-money"></i></div>
+            <div class="text-center">Amount you have to pay</div>
+            <div class="text-center"><strong>{{ session['wizard'].currency }}{{ '%0.2f'| format(session['wizard'].amount) }}</strong></div>
+        </div>
+    {% endif %}
+{% endblock %}

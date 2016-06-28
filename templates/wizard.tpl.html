@@ -1,0 +1,86 @@
+{% extends "members/members.tpl.html" %}
+
+{% block members_content %}
+<div id="wizard">
+    <div class="col-md-12 w-progress">
+        <div class="progress-text text-center">
+            <div class="w-mark {{ 'active' if current_step >= 1 else '' }} {{ 'w-mark-zero' if session['wizard'].amount == 0 else '' }}">Personal Details</div>
+            {% if session['wizard'].amount > 0 %}
+                <div class="w-mark {{ 'active' if current_step >= 2 else '' }}">Invoice Details</div>
+            {% endif %}
+            <div class="w-mark {{ 'active' if current_step == 3 else '' }} {{ 'w-mark-zero' if session['wizard'].amount == 0 else '' }}">Summary</div>
+        </div>
+        <div class="clearfix"></div>
+        <div class="progress-line text-center">
+            <div class="w-mark {{ 'active' if current_step >= 1 else '' }} {{ 'w-mark-zero' if session['wizard'].amount == 0 else '' }}">
+                <div class="w-line {{ 'active' if current_step >= 1 else '' }}"></div>
+                <div class="w-circle"><i class="fa fa-circle"></i></div>
+                <div class="w-line {{ 'active' if current_step > 1 else '' }}"></div>
+            </div>
+            {% if session['wizard'].amount > 0 %}
+                <div class="w-mark {{ 'active' if current_step >= 2 else '' }}">
+                    <div class="w-line {{ 'active' if current_step >= 2 else '' }}"></div>
+                    <div class="w-circle"><i class="fa fa-circle"></i></div>
+                    <div class="w-line {{ 'active' if current_step > 2 else '' }}"></div>
+                </div>
+            {% endif %}
+            <div class="w-mark {{ 'active' if current_step >= 3 else '' }} {{ 'w-mark-zero' if session['wizard'].amount == 0 else '' }}">
+                <div class="w-line {{ 'active' if current_step >= 3 else '' }}"></div>
+                <div class="w-circle"><i class="fa fa-circle"></i></div>
+                <div class="w-line {{ 'active' if current_step > 3 else '' }}"></div>
+            </div>
+        </div>
+    </div>
+    <form action="" method="post" novalidate>
+        <div class="col-md-12">
+            <div class="col-md-12">
+                <h3>{% block step_header %}{% endblock %}</h3>
+                {% if session['wizard'].errors and session['wizard'].errors|length > 0 %}
+                    <div class="alert alert-danger">
+                        Please complete the next fields in order to proceed: <br /><br />
+                        {% for error in session['wizard'].errors %}
+                            {{ error }}<br />
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if session['wizard'].terms_error %}
+                    <div class="alert alert-danger">Please agree with our terms and conditions below</div>
+                {% endif %}
+                {% if session['wizard'].country_is_excluded %}
+                    <div class="alert alert-danger">The country you've chosen is excluded for payment</div>
+                {% endif %}
+            </div>
+            <div class="{% if session['wizard'].amount > 0 or current_step == 3 %}col-md-9{% else %}col-md-12{% endif %}">
+                <div class="w-content">
+                    {% block step_content %}{% endblock %}
+                </div>
+            </div>
+            <div class="col-md-3">
+                {% block right_aside %}{% endblock %}
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="col-md-12 w-buttons">
+            <div class="{% if session['wizard'].amount > 0 or current_step == 3 %}col-md-9{% else %}col-md-12{% endif %}">
+                <div class="pull-left">
+                    {% if current_step > 1 %}
+                        <button type="submit" name="direction" class="btn btn-default" value="Backward" id="btnBack">{{ button_names[current_step]['Backward'] }}</button>
+                    {% endif %}
+                </div>
+                {% if session['wizard'].amount == 0 or current_step < 3 or session['event'].providers|length > 0 %}
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-success" name="direction" value="Forward" id="btnForward">{{ button_names[current_step]['Forward'] }}</button>
+                        <div id="processing" style="display: none; width: 80px"></div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+    <div class="clearfix"></div>
+    <div id="submitForm"></div>
+</div>
+{% endblock %}
+
+{% block additional_scripts %}
+    <script type="text/javascript" src="/static/default/js/basket.js"></script>
+{% endblock %}

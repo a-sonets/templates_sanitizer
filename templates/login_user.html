@@ -1,0 +1,33 @@
+{% extends "layouts/base.html" %}
+{%  block content %}
+{% include "users/_messages.html" %}
+{% from "users/_macros.html" import render_field_with_errors, render_field %}
+{% set terms_label = 'I agree with <a href="' + terms_link + '" target="_blank">Terms and Conditions</a>' %}
+<div class="col-md-12">
+    <div class="col-md-6"><h3>Login</h3>
+        <form action="{{ login_link }}" method="POST" name="login_user_form">
+          {{ login_form.hidden_tag() }}
+          {{ render_field_with_errors(login_form.admin_email,class="form-control") }}
+          {{ render_field_with_errors(login_form.admin_password, class="form-control") }}
+          {{ render_field_with_errors(login_form.remember_me) }}
+          {{ render_field(login_form.next) }}
+          {{ render_field(login_form.submit, class='btn btn-lg btn-primary btn-block') }}
+        </form>
+        <a href="{{ forgot_password_link }}">Forgot password</a></div>
+    <div class="col-md-6">
+        <h3>Register</h3>
+        <form action="{{ register_link }}" method="POST"  name="login_user_form">
+          {{ register_form.hidden_tag() }}
+          {{ render_field_with_errors(register_form.user_firstname,class="form-control") }}
+          {{ render_field_with_errors(register_form.user_lastname,class="form-control") }}
+          {{ render_field_with_errors(register_form.user_email,class="form-control") }}
+          {{ render_field_with_errors(register_form.admin_password,class="form-control") }}
+          {{ render_field_with_errors(register_form.password_confirm,class="form-control") }}
+          {{ render_field_with_errors(register_form.confirm, label=terms_label) }}
+          {{ render_field(register_form.next) }}
+          {{ render_field(register_form.submit, class='btn btn-lg btn-primary btn-block') }}
+        </form>
+    </div>
+</div>
+
+{%  endblock %}

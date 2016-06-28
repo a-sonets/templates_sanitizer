@@ -1,0 +1,27 @@
+{% extends 'layouts/base.html' %}
+{% block conteiner_raw %}
+    <div class="col-sm-12">
+        {% include 'users/_messages.html' %}
+    </div>
+    {% if login_form and register_form %}
+        <div class="col-sm-12 col-sm-offset-1 ">
+            <div class="col-sm-6">
+                <div class="row">
+                    {{ login_form|safe }}
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="row">
+                    {{ register_form|safe }}
+                </div>
+            </div>
+        </div>
+    {% elif login_form or register_form %}
+        {% set form = login_form or register_form%}
+            <div class="col-sm-12 col-sm-offset-3 ">
+                <div class="row">
+                    {{ form|safe }}
+                </div>
+            </div>
+    {% endif %}
+{% endblock %}

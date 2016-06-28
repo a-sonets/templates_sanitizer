@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Evessio - event not found</title>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700italic' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" href="/static/default/img/favicon.ico">
+    <link rel="stylesheet" href="/static/default/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/default/css/errors.css">
+  </head>
+  <body>
+    <div id="error-page-container" class="container-fluid">
+        <div id="section-top" class="row">
+            {% block section_top %}{% endblock %}
+        </div>
+        <div id="section-bottom" class="row">
+
+            <div id="bar-grey"></div>
+            <div id="powered-by">
+                Powered by <br />
+                <img src="/static/default/img/evessio-logo-main.png" />
+            </div>
+            <div id="footer" class="col-xs-12">
+                <span>
+                Copyright &copy; <script>document.write(new Date().getFullYear())</script> All screenshots. &copy Evessio.
+                <a href="http://versiontwo.co.uk" target="_NEW">Part of Version Two Limited</a>
+                </span>
+                <img src="/static/default/img/version-two-limited.png" alt="Evessio - part of Version Two Limited">
+            </div>
+        </div>
+    </div>
+  </body>
+</html>

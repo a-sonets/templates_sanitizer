@@ -1,0 +1,107 @@
+{% extends "members/members.tpl.html" %}
+{% block members_content %}
+<div>
+    <div>
+        <div>
+            {% if judgingMessage %}
+                <div class="message">
+                    {{ judgingMessage }}
+                </div>
+            {% endif %}
+            {% if accessibility['Judging']['status'] != 'not_started' %}
+                {% if accessibility['Judging']['status'] == 'closed' %}
+                    <div class="text-center">Judging is now closed for this event.</div>
+                {% endif %}
+                <table width="100%" class="table">
+                <thead>
+                    <tr>
+                        <th>Categories</th>
+                        <th width="100" class="text-center">Type</th>
+                        <th width="150" class="text-center">Nominations</th>
+                        <th width="22%" class="text-center">Judging progress</th>
+                    </tr>
+                </thead>
+                </table>
+
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    {% for category in categories %}
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne2">
+
+                            <table width="100%">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <i class="fa fa-trophy"></i>
+                                            <a role="button" data-toggle="collapse" data-target="#collapse-{{ loop.index }}" href="#">
+                                                {{category.content_preview[session['lang'].upper()]['NAME'].value}}
+                                            </a>
+                                        </td>
+                                        <td width="100" class="text-center"><div data-ng-if="category.content_preview[session['lang'].upper()]['PHYSICAL'].value === 'true'" class="badge-counter">physical</div></td>
+                                        <td width="150" class="text-center"><div class="badge-counter">{{ category.paid_nominations|length }}</div></td>
+                                        <td width="22%" style="padding-top: 12px; padding-left: 12px;">
+                                            <div class="progress" style="background-color: white">
+                                              <div class="progress-bar {% if category.progress == 100 %} progress-bar-success {% endif %}" role="progressbar" aria-valuenow="{{ category.progress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ category.progress }}%;">
+                                                {{ category.progress }}%
+                                              </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div id="collapse-{{ loop.index }}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                            <div>
+
+                                <div class="cat-desc">
+                                    {{category.node_description}}
+                                </div>
+
+                                <table st-table="category.entries" class="table table-bordered" width="100%">
+                                    <thead>
+                                    <tr>
+                                        <th width="10">#</th>
+                                        <th class="st-sort-header" st-sort="nominee" translate>Nominees</th>
+                                        <th width="80" class="st-sort-header" st-sort="'percent_complete'" translate>Complete</th>
+                                        <th width="80" class="st-sort-header" st-sort="'percent_complete'" translate>Score</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for nomination in category.paid_nominations %}
+                                    <tr id="nomination-{{nomination.group_uuid}}" data-ng-class="{nomination_complete: nomination.isComplete}">
+                                        <td width="10">{{ loop.index }}</td>
+                                        <td>
+                                            <a class="toggle-category-nominations open-modal" target="{{nomination.group_uuid}}" url="nomination/{{ nomination.group_uuid }}/response">
+                                                <b><i class="fa fa-arrow-right"></i> {{ nomination.name }}</b>
+                                            </a>
+                                        </td>
+                                        <td width="80" align="middle"><div class="badge-counter"><i class="{% if nomination.completed  %}glyphicon glyphicon-ok show-success{% else %}glyphicon glyphicon-remove show-warning{% endif %}"></i></div></td>
+                                        <td width="80" align="middle">
+                                            {% if not nomination.completed %}
+                                            <h5>--</h5>
+                                            {% else %}
+                                            <div class="badge-counter show-success"><b>{{ nomination.judge_score }}</b></div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <div class="modal fade" id="{{nomination.group_uuid}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                    </div>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% if categories|length < 1 %}
+                        <div class="text-center">No categories available</div>
+                    {% endif %}
+                </div>
+            {% elif accessibility['Judging']['status'] == 'not_started' %}
+                <div class="text-center">Judging opens on {{ accessibility['Judging']['start'] }}.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

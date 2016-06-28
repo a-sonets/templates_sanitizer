@@ -1,0 +1,57 @@
+{% extends "members/members.tpl.html" %}
+{% block members_content %}
+
+<div class="nomination-receive">
+    {% if form_message %}
+        <div class="message">{{ form_message }}</div>
+    {% endif %}
+    <div class="row">
+        {% if errors %}
+            <div class="col-md-12">
+                <div class="alert alert-danger">
+                    {% for error in errors %}
+                        {{ error }}<br />
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        <div class="col-md-12">
+            <form method="post" action="">
+                <div>{{ form | safe }}</div>
+                <div class="pull-right">
+                    <button type="submit" class="btn btn-primary complete-preparation">Receive nomination</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <hr />
+    <div class="text-right row">
+        <div class="col-md-9">Expecting: <div class="badge-counter">{{ expecting_count }}</div></div>
+        <div class="col-md-3">Received: <div class="badge-counter">{{ received_count }}</div></div>
+    </div><br>
+    <table id="nominationTable" class="display table table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Nomination Code</th>
+                <th>Nominee</th>
+                <th>Received by</th>
+                <th>Date received</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for category in categories %}
+            {% for nomination in category.nominations %}
+                {% for preparation in nomination.preparations %}
+                <tr>
+                    <td>{{ nomination.nomination_code }}</td>
+                    <td>{{ nomination.name }}</td>
+                    <td>{{ preparation.received_user.user_firstname }} {{ preparation.received_user.user_lastname }}</td>
+                    <td>{{ moment(preparation.received_date).format('L LT') }}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

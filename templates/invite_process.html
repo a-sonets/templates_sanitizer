@@ -1,0 +1,19 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+
+    {% from "users/_macros.html" import render_field_with_errors, render_field, render_field_generic %}
+    {% set terms_label = 'I agree with <a href="' + terms_link + '" target="_blank">Terms and Conditions</a>' %}
+
+    <h4><span class="label label-primary">Email</span> {{ user.user_email }}</h4>
+    <form action="{{ action }}" class="form-signin" method="POST" id="register_user_form" name="register_user_form">
+        {{ register_user_form.hidden_tag() }}
+        {{ render_field_with_errors(register_user_form.admin_firstname, class="form-control required", value=user.user_firstname) }}
+        {{ render_field_with_errors(register_user_form.admin_lastname, class="form-control required", value=user.user_lastname) }}
+        {{ render_field_with_errors(register_user_form.admin_password, class="form-control required") }}
+        {{ render_field_with_errors(register_user_form.password_confirm, class="form-control required") }}
+        {{ render_field_with_errors(register_user_form.confirm, label=terms_label) }}
+
+        <button type="submit" class="btn btn-lg btn-primary btn-block">Login</button>
+    </form>
+
+{% endblock %}

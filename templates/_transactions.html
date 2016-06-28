@@ -1,0 +1,35 @@
+{% extends "members/members.tpl.html" %}
+{% block members_content %}
+<div>
+    <table id="nominationTable" class="display table table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Transaction ID</th>
+                <th>Date Time</th>
+                <th>Amount</th>
+                <th>Current status</th>
+                <th>Items</th>
+                <th>Checkout</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for transaction in transactions %}
+                <tr>
+                    <td><a href="{{ request['host_url']+session['event_shortname']+'/'+ session['lang']  + '/private/transactions/' + transaction.uuid + '/details'}}">{{ transaction.transaction_code }} </a> </td>
+                    <td>{{ moment(transaction.created_at).format('L LT') }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.status.description }}</td>
+                    <td>{{ transaction.details|sum(attribute='quantity') }}</td>
+                    <td align="center">
+                        {% if transaction.status.value == 'Incomplete' or transaction.status.value == 'Processing' %}
+                            <a class="btn btn-default" href="{{ url_for('basket.basket_view', event_shortname=session['event_shortname'], lang=session['lang']) }}?transaction_id={{ transaction.uuid }}">complete</a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

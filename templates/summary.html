@@ -1,0 +1,90 @@
+{% extends 'checkout/wizard.tpl.html' %}
+{% block step_header %}Summary{% endblock %}
+{% block step_content %}
+    <div>
+        {{ summary_table | safe }}
+    </div>
+    {% if session['wizard'].amount > 0 %}
+        <div class="w-providers-section">
+            <h3>Payment Method</h3>
+            {% if session['event'].providers|length > 0 %}
+                <div>
+                    {% for p in session['event'].providers %}
+                        <div class="w-provider">
+                            {% if loop.index == 1 %}
+                                <input type="radio" name="payment_type" value="{{ p.id }}" checked /> {{ p.name }}<br />
+                            {% else %}
+                                <input type="radio" name="payment_type" value="{{ p.id }}" /> {{ p.name }}<br />
+                            {% endif %}
+
+                            {% if p.id == PaymentProviders.Invoice.value %}
+                                <span class="w-info-text">Do you require a purchase order number on the invoice?</span><br />
+                                <input type="text" name="order_number" id="orderNumber" />
+                            {% endif %}
+                            {% if providers_logos[p.id] %}
+                                <div class="row payment-icons">
+                                    <div class="pull-left">
+                                        {{ providers_logos[p.id] | safe }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <h4>Sorry, there are no options to pay. Please contact the Event Administrator for help.</h4>
+            {% endif %}
+            <div class="clearfix"></div>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block additional_scripts %}
+    <script type="text/javascript">
+        $('#btnForward').click(function(){
+            $('#btnForward').hide();
+            $('#processing').show();
+            $('#btnBack').attr('disabled', 'disabled');
+            var i = 0;
+            setInterval(function() {
+                $("#processing").html('Processing' + Array((++i % 4)+1).join("."));
+            }, 500);
+
+            $.ajax({
+                method: "POST",
+                data: { order_number: $('#orderNumber').val() },
+                {% if session['wizard'].amount > 0 %}
+                    url: 'form/' + $("input[type='radio'][name='payment_type']:checked").val(),
+                {% else %}
+                    url: 'form/priceless',
+                {% endif %}
+                success: function(result){
+                    $("#submitForm").html(result).find('form').submit();
+            }});
+
+            return false;
+        });
+    </script>
+{% endblock %}
+{% block right_aside %}
+    <div class="w-address">
+        <span><strong>Personal Details </strong><a href="{{ request['host_url'] + session['event_shortname'] + '/'+ session['lang'] + '/basket/checkout/step1' }}" class="pull-right w-address-edit"><i class="fa fa-pencil"></i> Edit</a></span>
+        <div>{{ personal_details[0] + ' ' + personal_details[1] }}</div>
+        {% for line in personal_details %}
+            {% if loop.index > 2 and line %}
+                <span>{{ line }}</span><br />
+            {% endif %}
+        {% endfor %}
+    </div>
+    <br />
+    {% if session['wizard'].amount > 0 %}
+        <div class="w-address">
+            <span><strong>Invoice Details </strong><a href="{{ request['host_url'] + session['event_shortname'] + '/'+ session['lang'] + '/basket/checkout/step2' }}" class="pull-right w-address-edit"><i class="fa fa-pencil"></i> Edit</a></span>
+            <div>{{ invoice_details[0] + ' ' + invoice_details[1] }}</div>
+            {% for line in invoice_details %}
+                {% if loop.index > 2 and line %}
+                    <span>{{ line }}</span><br />
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

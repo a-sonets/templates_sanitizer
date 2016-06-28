@@ -1,0 +1,40 @@
+{% extends "members/members.tpl.html" %}
+{% block members_content %}
+<div>
+    <hr/>
+    {{ details | safe }}
+    {% if transaction.status.value == 'Incomplete' or transaction.status.value == 'Processing' %}
+    <br />
+    <div class="pull-right">
+        <a class="btn btn-default" href="{{ url_for('profile.cancel_transaction', event_shortname=session['event_shortname'], lang=session['lang'], transaction_uuid=transaction.uuid) }}">Cancel Transaction</a>
+    </div>
+    <div class="clearfix"></div>
+    {% endif %}
+    <hr/>
+    {% if transaction.status.value != 'RefundRequested' and transaction.amount > 0 and transaction.status.value != 'Incomplete' %}
+        <button class="btn btn-primary hideble show" onclick="$('.hideble').toggleClass('hidden show');" {% if transaction.amount == 0 %}disabled{% endif %}>Refund request</button>
+        <br><br>
+        <div class="well hideble hidden" id="refund-form-placeholder">
+            <form method="POST" action="{{ url_for('profile.ask_transaction_refund', event_shortname=session['event_shortname'], lang=session['lang'], transaction_uuid=transaction.uuid) }}">
+                <div class="form-group required">
+                <label for="refund-amount" >Amount</label>
+                <div class="input-group col-xs-6">
+                    <input type="text" id="refund-amount-input"
+                           name="refund-amount" class="form-control" min="0" max="{{ transaction.amount|float }}" required="required">
+                    <span class="input-group-addon">{{ transaction.currency.symbol }}</span>
+                </div>
+                </div>
+                <div class="form-group">
+                <label for="refund-comment">Comment</label>
+                <textarea name="refund-comment" class="form-control"></textarea>
+                </div>
+                <br>
+                <input type="submit" id="send-request-btn" class="btn btn-success" value="Send Request" disabled>
+                <a class="btn btn-default" id="close-refund-form" onclick="$('.hideble').toggleClass('hidden show');">Cancel</a>
+            </form>
+        </div>
+    {% elif transaction.status.value == 'RefundRequested' %}
+            Refund request sent.
+    {% endif %}
+</div>
+{% endblock %}

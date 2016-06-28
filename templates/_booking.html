@@ -1,0 +1,39 @@
+<table class="table" style="margin-bottom: 0; border: none"  cellspacing="0" cellpadding="0">
+    <tbody>
+    <tr class="booking-message">
+        <td colspan="4" style="border: none;">
+            Guest names can be supplied at a later stage by logging in to your account.
+            You can complete your booking without filling in guest names at this stage.
+        </td>
+    </tr>
+    {% for booking in forms %}
+        <tr style="border: none;">
+            <td colspan="4"
+                tabindex="0" class="accordion-toggle panel-title"
+                data-toggle="collapse-next"
+                style="cursor: pointer; border-top: none">
+                Guest {{ loop.index }}
+                <div class="pull-right">
+                    <button class="btn btn-sm btn-default">
+                        <span class="product-progress">0</span> /
+                        <span class="count-fields">0</span>
+                    </button>
+                    &nbsp;
+                    <button class="btn btn-sm btn-default">
+                        <i class="glyphicon glyphicon-chevron glyphicon-chevron-down"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+        <tr style="height: 0; padding: 0;" class="collapse booking">
+            <td colspan="4" style="height: 0; padding: 0;">
+                <br>
+                <form method="POST" enctype='application/json'>
+                    {{ booking|safe }}
+                </form>
+                <br>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
